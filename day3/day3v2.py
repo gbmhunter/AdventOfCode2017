@@ -14,13 +14,13 @@ def GetXY(index):
     else:
         sqrtMaxIndexInEdge = sqrtCeil
 
-    print('sqrtMaxIndexInEdge = ' + str(sqrtMaxIndexInEdge))
+    # print('sqrtMaxIndexInEdge = ' + str(sqrtMaxIndexInEdge))
 
     maxIndexInEdge = math.pow(sqrtMaxIndexInEdge, 2)
-    print('maxIndexInEdge = ' + str(maxIndexInEdge))
+    # print('maxIndexInEdge = ' + str(maxIndexInEdge))
 
     maxIndexInPrevEdge = math.pow(sqrtMaxIndexInEdge - 2, 2)
-    print('maxIndexInPrevEdge = ' + str(maxIndexInPrevEdge))
+    # print('maxIndexInPrevEdge = ' + str(maxIndexInPrevEdge))
 
     indexRelativeToEdgeStart = index - maxIndexInPrevEdge
     # print('indexRelativeToEdgeStart = ' + str(indexRelativeToEdgeStart))
@@ -85,21 +85,49 @@ def GetXY(index):
     return xStart, yStart
 
 
-result = GetXY(2)
-print(result)
+def FindSumGreaterThan(sum):
+    part2AnswerFound = False
+    index = 1
+    sumDict = {}
+    while not part2AnswerFound:
 
+        # print('Index = ' + str(index))
+
+        xVal, yVal = GetXY(index)
+
+        # print('xVal = ' + str(xVal) + ', yVal = ' + str(yVal))
+
+        if index == 1:
+            sumDict[(xVal, yVal)] = 1
+        else:
+            sumNeighbourTiles = 0
+
+            # Start in lower right corner, walk anti-clockwise
+            sumNeighbourTiles += sumDict.get((xVal + 1, yVal - 1), 0)
+            sumNeighbourTiles += sumDict.get((xVal + 1, yVal + 0), 0)
+            sumNeighbourTiles += sumDict.get((xVal + 1, yVal + 1), 0)
+            sumNeighbourTiles += sumDict.get((xVal + 0, yVal + 1), 0)
+            sumNeighbourTiles += sumDict.get((xVal - 1, yVal + 1), 0)
+            sumNeighbourTiles += sumDict.get((xVal - 1, yVal + 0), 0)
+            sumNeighbourTiles += sumDict.get((xVal - 1, yVal - 1), 0)
+            sumNeighbourTiles += sumDict.get((xVal + 0, yVal - 1), 0)
+            
+            # print('sumNeighbourTiles = ' + str(sumNeighbourTiles))
+
+            # Check if sum meets finish condition
+            if sumNeighbourTiles > input:
+                return sumNeighbourTiles
+
+            sumDict[(xVal, yVal)] = sumNeighbourTiles
+
+        index += 1
+
+# input = 5
+input = 277678
+result = GetXY(input)
 part1Answer = math.fabs(result[0]) + math.fabs(result[1])
 print('part1Answer = ' + str(part1Answer))
 
 
-# part2AnswerFound = False
-# index = 1
-# while not part2AnswerFound:
-
-#     print('Index = ' + str(index))
-
-#     xVal, yVal = GetXY(index)
-
-#     print('xVal = ' + str(xVal) + ', yVal = ' + str(yVal))
-
-#     index += 1
+sum = FindSumGreaterThan(input)
+print('part2Answer = ' + str(sum))
