@@ -1,6 +1,6 @@
 import math
 input = 277678
-# input = 9
+# input = 12
 
 print('input = ' + str(input))
 input = input - 1
