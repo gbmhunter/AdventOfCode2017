@@ -8,15 +8,16 @@ with open('input.txt', newline='') as csvfile:
               
 # banks = [ 0, 2, 7, 0 ]
 
-print('banks = ' + str(banks))
+# print('banks = ' + str(banks))
 
 duplicateDict = {}
 numRedisCycles = 0
+banksAsTuple = {}
 while True:
     # Find bank with lowest num of blocks
     index = banks.index(max(banks))
 
-    print('index = ' + str(index))
+    # print('index = ' + str(index))
 
     # Pull out blocks from this min bank
     blocksToRedis = banks[index]
@@ -26,10 +27,10 @@ while True:
     
     for i in range(0, blocksToRedis):
         limIndex = (index + 1 + i)%len(banks)
-        print('limIndex = ' + str(limIndex))
+        # print('limIndex = ' + str(limIndex))
         banks[limIndex] += 1
 
-    print('Finished redistributing. banks = ' + str(banks))
+    # print('Finished redistributing. banks = ' + str(banks))
 
     numRedisCycles += 1
 
@@ -40,10 +41,12 @@ while True:
         # Duplicate bank configuration found!
         break
     else:
-        print('Bank configuration is unique. Performing redistribution cycle again...')
-        duplicateDict[banksAsTuple] = 1
+        # print('Bank configuration is unique. Performing redistribution cycle again...')
+        duplicateDict[banksAsTuple] = numRedisCycles
         
 
-print('Redistribution complete. Num cycles = ' + str(numRedisCycles))
+print('Redistribution complete. Num cycles from start (part 1 answer) = ' + str(numRedisCycles))
+print('Num cycles in loop (part 2 answer) = ' + str(numRedisCycles - duplicateDict[banksAsTuple]))
+
 
 
