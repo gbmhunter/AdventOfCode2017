@@ -3,12 +3,14 @@ class Node:
         self.name = ""
         self.parent = None
         self.children = []
+        self.selfWeight = -1
 
     def __str__(self):
         output = '{ '
         output += 'name = ' + self.name
         output += ', parent = ' + str(self.parent)
         output += ', children = ' + str(self.children)
+        output += ', selfWeight = ' + str(self.selfWeight)
         output += ' }'
         return output
 
@@ -29,6 +31,9 @@ with open('input.txt', newline='') as file:
             nodeDict[nodeName].name = nodeName
 
         node = nodeDict[nodeName]
+
+        # Extract self weight
+        node.selfWeight = int(line[line.index('(') + 1:line.index(')')])        
 
         # Extract children
         startOfArrowIndex = line.find("->")
@@ -86,4 +91,44 @@ while not rootNode:
         currNode = nodeDict[currNode.parent]
 
 print('root node = ' + str(rootNode))
+
+def checkEqual1(iterator):
+    iterator = iter(iterator)
+    try:
+        first = next(iterator)
+    except StopIteration:
+        return True
+    return all(first == rest for rest in iterator)
+
+def FindWeight(nodeName):
+    print('FindWeight() called. nodeName = ' + nodeName)
+
+    # Sum up children weight
+    childWeights = []
+    for child in nodeDict[nodeName].children:
+        print('Finding weight for child = ' + child)
+        childWeight = FindWeight(child)
+        if childWeight == None:
+            raise NameError('Test')
+        childWeights.append(childWeight)
+        print('childWeight (' + child + ') = ' + str(childWeight))
+
+    if not checkEqual1(childWeights):
+        print('Inbalance found! nodeName = ' + nodeName)
+        print('weights = ' + str(childWeights))
+        raise NameError('Test')        
+
+    totalChildWeight = -1
+    if len(childWeights) == 1:
+        totalChildWeight = childWeights.pop()*len(nodeDict[nodeName].children)
+    else:
+        totalChildWeight = 0
+
+    totalWeight = nodeDict[nodeName].selfWeight + totalChildWeight
+    print('totalWeight (' + nodeName + ') = ' + str(totalWeight))
+
+    return totalWeight
+
+FindWeight(rootNode.name)
+    
 
