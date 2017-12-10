@@ -1,7 +1,7 @@
 class Node:
     def __init__(self):
         self.name = ""
-        self.parent = {}
+        self.parent = None
         self.children = []
 
     def __str__(self):
@@ -12,6 +12,7 @@ class Node:
         output += ' }'
         return output
 
+nodeDict = {}
 with open('input.txt', newline='') as file:
     for line in file:
         print('line = ' + str(line))
@@ -19,10 +20,15 @@ with open('input.txt', newline='') as file:
         # Extract node name
         firstWhitespaceIndex = line.index(" ")
         print('firstWhitespaceIndex = ' + str(firstWhitespaceIndex))
+        
+        nodeName = line[0:firstWhitespaceIndex]
+        print('name = "' + nodeName + '"')
 
-        node = Node()
-        node.name = line[0:firstWhitespaceIndex]
-        print('name = "' + node.name + '"')
+        if not nodeName in nodeDict:
+            nodeDict[nodeName] = Node()
+            nodeDict[nodeName].name = nodeName
+
+        node = nodeDict[nodeName]
 
         # Extract children
         startOfArrowIndex = line.find("->")
@@ -51,6 +57,16 @@ with open('input.txt', newline='') as file:
 
                 node.children.append(childName)
 
+                if not childName in nodeDict:                                    
+                    print('child not in database, creating...')
+                    nodeDict[childName] = Node()
+                    nodeDict[childName].name = childName
+                else:
+                    print('child already in database.')
+
+                nodeDict[childName].parent = nodeName
+
+
                 if foundLastChild:
                     break
 
@@ -60,4 +76,14 @@ with open('input.txt', newline='') as file:
         print('Node = ' + str(node))
 
 
-print('Test')
+# Find root node
+currNode = nodeDict[list(nodeDict)[0]]
+rootNode = None
+while not rootNode:
+    if currNode.parent == None:
+        rootNode = currNode
+    else:
+        currNode = nodeDict[currNode.parent]
+
+print('root node = ' + str(rootNode))
+
