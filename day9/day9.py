@@ -10,6 +10,7 @@ def Process(stream):
     inGarbage = False
     groupDepth = 0
     totalScore = 0
+    numGarbageChars = 0
     for char in stream:
 
         print('char = ' + char + ', groupDepth = ' + str(groupDepth) + ', totalScore = ' + str(totalScore))
@@ -32,19 +33,29 @@ def Process(stream):
             totalScore += groupDepth
         elif char == '}' and not inGarbage:
             print('Found end of group.')
-            groupDepth -= 1            
+            groupDepth -= 1
+        elif inGarbage:
+            print('In garbage group, adding one to garbage char count.')
+            numGarbageChars += 1          
         else:
             print('Found garbage.')
 
-    return totalScore
+    return totalScore, numGarbageChars
 
-assert Process('{}') == 1
-assert Process('{{{}}}') == 6    
-assert Process('{{},{}}') == 5    
-assert Process('{{{},{},{{}}}}') == 16    
-assert Process('{<a>,<a>,<a>,<a>}') == 1
-assert Process('{{<ab>},{<ab>},{<ab>},{<ab>}}') == 9
-assert Process('{{<!!>},{<!!>},{<!!>},{<!!>}}') == 9 
-assert Process('{{<a!>},{<a!>},{<a!>},{<ab>}}') == 3
+assert Process('{}') == (1, 0)
+assert Process('{{{}}}') == (6, 0)    
+assert Process('{{},{}}') == (5, 0)    
+assert Process('{{{},{},{{}}}}') == (16, 0)    
+assert Process('{<a>,<a>,<a>,<a>}') == (1, 4)
+assert Process('{{<ab>},{<ab>},{<ab>},{<ab>}}') == (9, 8)
+assert Process('{{<!!>},{<!!>},{<!!>},{<!!>}}') == (9, 0) 
+assert Process('{{<a!>},{<a!>},{<a!>},{<ab>}}') == (3, 17)
+assert Process('<>') == (0, 0)
+assert Process('<random characters>') == (0, 17)
+assert Process('<<<<>') == (0, 3)
+assert Process('<{!>}>') == (0, 2)
+assert Process('<!!>') == (0, 0)
+assert Process('<!!!>>') == (0, 0)
+assert Process('<{o"i!a,<{i<a>') == (0, 10)
 score = Process(stream)
 print('score = ' + str(score))
