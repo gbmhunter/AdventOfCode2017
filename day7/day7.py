@@ -4,6 +4,7 @@ class Node:
         self.parent = None
         self.children = []
         self.selfWeight = -1
+        self.totalWeight = -1
 
     def __str__(self):
         output = '{ '
@@ -16,15 +17,12 @@ class Node:
 
 nodeDict = {}
 with open('input.txt', newline='') as file:
-    for line in file:
-        print('line = ' + str(line))
+    for line in file:        
 
         # Extract node name
-        firstWhitespaceIndex = line.index(" ")
-        print('firstWhitespaceIndex = ' + str(firstWhitespaceIndex))
+        firstWhitespaceIndex = line.index(" ")        
         
-        nodeName = line[0:firstWhitespaceIndex]
-        print('name = "' + nodeName + '"')
+        nodeName = line[0:firstWhitespaceIndex]        
 
         if not nodeName in nodeDict:
             nodeDict[nodeName] = Node()
@@ -37,25 +35,18 @@ with open('input.txt', newline='') as file:
 
         # Extract children
         startOfArrowIndex = line.find("->")
-        if startOfArrowIndex != -1:
-            
-            print('startOfArrowIndex = ' + str(startOfArrowIndex))
-
+        if startOfArrowIndex != -1:                    
             childrenText = line[startOfArrowIndex + 3:len(line)]
-            print('childrenText = "' + childrenText + '"')
 
             while True:
-
-                print('looking in string "' + childrenText + '"')
-                commaIndex = childrenText.find(',')
-                print('Found comma at ' + str(commaIndex))
+                
+                commaIndex = childrenText.find(',')                
                 foundLastChild = False
-                if commaIndex == -1:
-                    print('Found last child.')
+                if commaIndex == -1:                    
                     foundLastChild = True
 
                 childName = childrenText[:commaIndex]
-                print('childName = "' + childName + '"')
+                # print('childName = "' + childName + '"')
 
                 # Remove child name from children text
                 childrenText = childrenText[commaIndex + 2:]
@@ -63,11 +54,9 @@ with open('input.txt', newline='') as file:
                 node.children.append(childName)
 
                 if not childName in nodeDict:                                    
-                    print('child not in database, creating...')
+                    # print('child not in database, creating...')
                     nodeDict[childName] = Node()
                     nodeDict[childName].name = childName
-                else:
-                    print('child already in database.')
 
                 nodeDict[childName].parent = nodeName
 
@@ -75,10 +64,7 @@ with open('input.txt', newline='') as file:
                 if foundLastChild:
                     break
 
-        else:
-            print('Node has no children.')
-
-        print('Node = ' + str(node))
+        # print('Node = ' + str(node))
 
 
 # Find root node
@@ -90,7 +76,7 @@ while not rootNode:
     else:
         currNode = nodeDict[currNode.parent]
 
-print('root node = ' + str(rootNode))
+print('root node (part 1 answer) = ' + rootNode.name)
 
 def checkEqual1(iterator):
     iterator = iter(iterator)
@@ -101,34 +87,64 @@ def checkEqual1(iterator):
     return all(first == rest for rest in iterator)
 
 def FindWeight(nodeName):
-    print('FindWeight() called. nodeName = ' + nodeName)
+    # print('FindWeight() called. nodeName = ' + nodeName)
 
     # Sum up children weight
     childWeights = []
     for child in nodeDict[nodeName].children:
-        print('Finding weight for child = ' + child)
+        # print('Finding weight for child = ' + child)
         childWeight = FindWeight(child)
-        if childWeight == None:
-            raise NameError('Test')
         childWeights.append(childWeight)
-        print('childWeight (' + child + ') = ' + str(childWeight))
+        # print('childWeight (' + child + ') = ' + str(childWeight))
 
     if not checkEqual1(childWeights):
-        print('Inbalance found! nodeName = ' + nodeName)
-        print('weights = ' + str(childWeights))
+        # print('Inbalance found! nodeName = ' + nodeName)
+        # print('weights = ' + str(childWeights))
+
+        # Find the one weight that does not match the others!
+        correctWeight = -1
+        incorrectWeight = -1
+        for childWeight in childWeights:
+            if childWeights.count(childWeight) == 1:                
+                incorrectWeight = childWeight
+            else:
+                correctWeight = childWeight
+
+        # print('Found incorrect weight of ' + str(incorrectWeight) + ', correct weight = ' + str(correctWeight))
+
+        # Get node with incorrect weight
+        childIndex = childWeights.index(incorrectWeight)
+        childName = nodeDict[nodeName].children[childIndex]
+        # print('incorrect child = ' + str(nodeDict[childName]))
+
+        # Get incorrect child
+        incorrectChildTotalWeight = nodeDict[childName].totalWeight
+        # print('incorrectChildTotalWeight = ' + str(incorrectChildTotalWeight))
+
+        weightDiff = correctWeight - incorrectWeight
+
+        correctedChildSelfWeight = nodeDict[childName].selfWeight + weightDiff
+        print('correctedChildSelfWeight (part 2 answer) = ' + str(correctedChildSelfWeight))
+
         raise NameError('Test')        
 
     totalChildWeight = -1
-    if len(childWeights) == 1:
-        totalChildWeight = childWeights.pop()*len(nodeDict[nodeName].children)
+    if len(childWeights) >= 1:
+        totalChildWeight = childWeights[0]*len(nodeDict[nodeName].children)
     else:
         totalChildWeight = 0
 
     totalWeight = nodeDict[nodeName].selfWeight + totalChildWeight
-    print('totalWeight (' + nodeName + ') = ' + str(totalWeight))
+    # print('totalWeight (' + nodeName + ') = ' + str(totalWeight))
+
+    nodeDict[nodeName].totalWeight = totalWeight
 
     return totalWeight
 
-FindWeight(rootNode.name)
+try:
+    FindWeight(rootNode.name)
+except NameError as e:
+    pass
+
     
 
