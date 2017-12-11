@@ -4,7 +4,7 @@ with open('input.txt', newline='') as file:
         stream = line
 
 def Process(stream):
-    print('Process() called with stream = ' + stream)
+    # print('Process() called with stream = ' + stream)
 
     ignoreNextChar = False
     inGarbage = False
@@ -13,32 +13,30 @@ def Process(stream):
     numGarbageChars = 0
     for char in stream:
 
-        print('char = ' + char + ', groupDepth = ' + str(groupDepth) + ', totalScore = ' + str(totalScore))
+        # print('char = ' + char + ', groupDepth = ' + str(groupDepth) + ', totalScore = ' + str(totalScore))
 
         if ignoreNextChar:
-            print('Ignoring this char.')
+            # print('Ignoring this char.')
             ignoreNextChar = False            
         elif char == '!':
-            print('Found "!", ignoring next char...')
+            # print('Found "!", ignoring next char...')
             ignoreNextChar = True            
         elif char == '<' and not inGarbage:
-            print('Found start of garbage...')
+            # print('Found start of garbage...')
             inGarbage = True            
         elif char == '>' and inGarbage:
-            print('Found end of garbage.')
+            # print('Found end of garbage.')
             inGarbage = False          
         elif char == '{' and not inGarbage:
-            print('Found start of group.')
+            # print('Found start of group.')
             groupDepth += 1
             totalScore += groupDepth
         elif char == '}' and not inGarbage:
-            print('Found end of group.')
+            # print('Found end of group.')
             groupDepth -= 1
         elif inGarbage:
-            print('In garbage group, adding one to garbage char count.')
+            # print('In garbage group, adding one to garbage char count.')
             numGarbageChars += 1          
-        else:
-            print('Found garbage.')
 
     return totalScore, numGarbageChars
 
@@ -58,4 +56,5 @@ assert Process('<!!>') == (0, 0)
 assert Process('<!!!>>') == (0, 0)
 assert Process('<{o"i!a,<{i<a>') == (0, 10)
 score = Process(stream)
-print('score = ' + str(score))
+print('score (part 1 answer) = ' + str(score[0]))
+print('num. garbage chars (part 2 answer) = ' + str(score[1]))
